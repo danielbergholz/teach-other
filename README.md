@@ -1,29 +1,45 @@
-# Tailwind CSS example
+# Teach Other
 
-This is an example of using [Tailwind CSS](https://tailwindcss.com) in a Next.js project.
+Teach other is a private lesson scheduling service for college students.
 
-## Deploy your own
+This was the final project from an University class called "Projeto Transversal 1" (University of Brasília - Network Engineering)
 
-Deploy the example using [Vercel](https://vercel.com):
+## YouTube tutorial
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss)
+You can watch a full tutorial about this project on [YouTube](https://www.youtube.com/watch?v=MeYibJFi7p0&list=PLbV6TI03ZWYVxGBKyYJf_Qy6d4saMbCq3&index=2).
 
-## How to use
+## How to run this website
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+- Create your own **.env.local** file based on **.env.example** (Create a mongoDB instance on MongoDB Atlas or docker container and paste the database url on **.env.local**).
 
+- Install all dependencies with yarn:
 ```bash
-npx create-next-app --example with-tailwindcss with-tailwindcss-app
-# or
-yarn create next-app --example with-tailwindcss with-tailwindcss-app
+yarn
 ```
 
-Deploy it to the cloud with [Vercel](https://vercel.com/import?filter=next.js&utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+- Start dev server:
+```bash
+yarn dev
+```
 
-## Notes
+## Technologies used
+- Node
+- Yarn
+- Typescript
+- Next.js
+- NextAuth (Authentication)
+- Tailwind CSS
+- SWR (Client side caching)
+- MongoDB Atlas (cloud database as a service)
+- Vercel (hosting)
 
-This example is a basic starting point for using [Tailwind CSS](https://tailwindcss.com) with Next.js. It includes the following [PostCSS](https://github.com/postcss/postcss) plugins:
+## Features included
+- Authentication (create account/login)
+- List teachers by class
+- Schedule a private lesson
+- Evaluate teacher after class
+- Spend and recieve a digital currency
 
-- [postcss-preset-env](https://preset-env.cssdb.org/) - Adds stage 2+ features and autoprefixes
+<!-- ## Live version
 
-To control the generated stylesheet's filesize, this example uses Tailwind CSS' [`purge` option](https://tailwindcss.com/docs/controlling-file-size/#removing-unused-css) to remove unused CSS.
+You can visit the live version of Teach Other on https://teach-other.vercel.app -->
