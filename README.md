@@ -28,6 +28,7 @@ yarn dev
 - Typescript
 - Next.js
 - NextAuth (Authentication)
+- Auth0
 - Tailwind CSS
 - SWR (Client side caching)
 - MongoDB Atlas (cloud database as a service)
