@@ -12,12 +12,12 @@ interface SuccessResponseType {
   email: string;
   cellphone: string;
   teacher: true;
-  coins: 1;
+  coins: number;
   courses: string[];
-  available_hours: object;
+  available_hours: Record<string, number[]>;
   available_locations: string[];
-  reviews: object[];
-  appointments: object[];
+  reviews: Record<string, unknown>[];
+  appointments: Record<string, unknown>[];
 }
 
 export default async (
@@ -25,21 +25,27 @@ export default async (
   res: NextApiResponse<ErrorResponseType | SuccessResponseType>
 ): Promise<void> => {
   if (req.method === 'GET') {
-    const { id } = req.body;
+    const { id }: { id: string } = req.body;
 
     if (!id) {
       res.status(400).json({ error: 'Missing teacher ID on request body' });
       return;
     }
 
+    let _id: ObjectID;
+    try {
+      _id = new ObjectID(id);
+    } catch {
+      res.status(400).json({ error: 'Wrong objectID' });
+      return;
+    }
+
     const { db } = await connect();
 
-    const response = await db
-      .collection('users')
-      .findOne({ _id: new ObjectID(id) });
+    const response = await db.findOne({ _id });
 
     if (!response) {
-      res.status(400).json({ error: 'Teacher not found' });
+      res.status(400).json({ error: `Teacher with ID ${_id} not found` });
       return;
     }
 

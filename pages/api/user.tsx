@@ -11,18 +11,19 @@ interface SuccessResponseType {
   email: string;
   cellphone: string;
   teacher: true;
-  coins: 1;
+  coins: number;
   courses: string[];
-  available_hours: object;
+  available_hours: Record<string, number[]>;
   available_locations: string[];
-  reviews: object[];
-  appointments: object[];
+  reviews: Record<string, unknown>[];
+  appointments: Record<string, unknown>[];
 }
 
 export default async (
   req: NextApiRequest,
   res: NextApiResponse<ErrorResponseType | SuccessResponseType>
 ): Promise<void> => {
+  // CREATE USER
   if (req.method === 'POST') {
     const {
       name,
@@ -30,8 +31,16 @@ export default async (
       cellphone,
       teacher,
       courses,
-      available_hours,
       available_locations,
+      available_hours,
+    }: {
+      name: string;
+      email: string;
+      cellphone: string;
+      teacher: boolean;
+      courses: string[];
+      available_locations: string[];
+      available_hours: Record<string, number[]>;
     } = req.body;
 
     if (!teacher) {
@@ -55,9 +64,18 @@ export default async (
 
     const { db } = await connect();
 
-    const response = await db.collection('users').insertOne({
+    const lowerCaseEmail = email.toLowerCase();
+    const emailAlreadyExists = await db.findOne({ email: lowerCaseEmail });
+    if (emailAlreadyExists) {
+      res
+        .status(400)
+        .json({ error: `E-mail ${lowerCaseEmail} already exists` });
+      return;
+    }
+
+    const response = await db.insertOne({
       name,
-      email,
+      email: lowerCaseEmail,
       cellphone,
       teacher,
       coins: 1,
@@ -69,7 +87,10 @@ export default async (
     });
 
     res.status(200).json(response.ops[0]);
-  } else if (req.method === 'GET') {
+  }
+
+  // SHOW USER PROFILE
+  else if (req.method === 'GET') {
     const { email } = req.body;
 
     if (!email) {
@@ -79,10 +100,10 @@ export default async (
 
     const { db } = await connect();
 
-    const response = await db.collection('users').findOne({ email });
+    const response = await db.findOne({ email });
 
     if (!response) {
-      res.status(400).json({ error: 'User with this e-mail not found' });
+      res.status(400).json({ error: `User with e-mail ${email} not found` });
       return;
     }
 
