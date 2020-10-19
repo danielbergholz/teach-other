@@ -197,7 +197,7 @@ export default async (
     // update teacher appointments
     await db.updateOne(
       { _id: new ObjectID(teacher_id) },
-      { $push: { appointments: appointment } }
+      { $push: { appointments: appointment }, $inc: { coins: 1 } }
     );
 
     // update student appointments
