@@ -1,28 +1,26 @@
 import { NextPage } from 'next';
 import Link from 'next/link';
 
-const links = [
-  { href: 'https://github.com/vercel/next.js', label: 'GitHub' },
-  { href: 'https://nextjs.org/docs', label: 'Docs' },
-];
-
 const Nav: NextPage = () => {
   return (
     <nav>
       <ul className="flex justify-between items-center p-8">
         <li>
           <Link href="/">
-            <a className="text-blue-500 no-underline">Home</a>
+            <a className="text-blue-500 no-underline">TEACH OTHER</a>
           </Link>
         </li>
         <ul className="flex justify-between items-center space-x-4">
-          {links.map(({ href, label }) => (
-            <li key={`${href}${label}`}>
-              <a href={href} className="btn-blue no-underline">
-                {label}
-              </a>
-            </li>
-          ))}
+          <li>
+            <Link href="/profile">
+              <a className="btn-blue no-underline">Profile</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/search">
+              <a className="btn-blue no-underline">Search</a>
+            </Link>
+          </li>
         </ul>
       </ul>
     </nav>
