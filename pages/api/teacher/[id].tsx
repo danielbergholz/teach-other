@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ObjectID } from 'mongodb';
-import connect from '../../utils/database';
+import connect from '../../../utils/database';
 
 interface ErrorResponseType {
   error: string;
@@ -25,7 +25,7 @@ export default async (
   res: NextApiResponse<ErrorResponseType | SuccessResponseType>
 ): Promise<void> => {
   if (req.method === 'GET') {
-    const { id }: { id: string } = req.body;
+    const id = req.query.id as string;
 
     if (!id) {
       res.status(400).json({ error: 'Missing teacher ID on request body' });
