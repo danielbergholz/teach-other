@@ -80,9 +80,11 @@ export default async (
     }
 
     // check if teacher_id or student_id is invalid
+    let testTeacherID: ObjectID;
+    let testStudentID: ObjectID;
     try {
-      const testTeacherID = new ObjectID(teacher_id);
-      const testStudentID = new ObjectID(student_id);
+      testTeacherID = new ObjectID(teacher_id);
+      testStudentID = new ObjectID(student_id);
     } catch {
       res.status(400).json({ error: 'Wrong objectID' });
       return;
@@ -117,7 +119,7 @@ export default async (
 
     // check if teacher exists
     const teacherExists: User = await db.findOne({
-      _id: new ObjectID(teacher_id),
+      _id: testTeacherID,
     });
 
     if (!teacherExists) {
@@ -129,7 +131,7 @@ export default async (
 
     // check if student exists
     const studentExists: User = await db.findOne({
-      _id: new ObjectID(student_id),
+      _id: testStudentID,
     });
 
     if (!studentExists) {
