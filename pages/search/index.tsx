@@ -1,17 +1,37 @@
 import { useState, useCallback } from 'react';
 import { NextPage } from 'next';
+import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/client';
 
-import api from '../utils/api';
-import Nav from '../components/nav';
+import api from '../../utils/api';
+import Nav from '../../components/nav';
+
+interface Teacher {
+  _id: string;
+  name: string;
+  email: string;
+  cellphone: string;
+  teacher: boolean;
+  coins: number;
+  courses: string[];
+  available_hours: Record<string, number[]>;
+  available_locations: string[];
+  reviews: Record<string, unknown>[];
+  appointments: Record<string, unknown>[];
+}
 
 const SearchPage: NextPage = () => {
   const [textInput, setTextInput] = useState('');
+  const [data, setData] = useState<Teacher[]>([]);
   const [session, loading] = useSession();
 
   const handleSearch = useCallback(() => {
-    api(`/api/search/${textInput}`).then((response) => console.log(response));
-  }, [textInput]);
+    api(`/api/search/${textInput}`).then((response) => {
+      const teachers: Teacher[] = response.data;
+
+      setData(teachers);
+    });
+  }, [textInput, setData]);
 
   return (
     <div>
@@ -42,6 +62,14 @@ const SearchPage: NextPage = () => {
           <button type="submit" className="bg-blue-200" onClick={handleSearch}>
             Pesquisar
           </button>
+          {data.length !== 0 &&
+            data.map((teacher) => (
+              <Link href={`/search/${teacher._id}`} key={teacher._id}>
+                <a>
+                  <h1 className="text-2xl">{teacher.name}</h1>
+                </a>
+              </Link>
+            ))}
         </>
       )}
       {loading && (
