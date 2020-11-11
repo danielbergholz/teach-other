@@ -1,7 +1,7 @@
-import { NextPage } from 'next';
+import { NextComponentType } from 'next';
 import Link from 'next/link';
 
-const Nav: NextPage = () => {
+const Nav: NextComponentType = () => {
   return (
     <nav>
       <ul className="flex justify-between items-center p-8">
