@@ -20,7 +20,7 @@ export default async (
     const { db } = await connect();
 
     const response = await db
-      .find({ courses: { $in: [new RegExp(`^${courses}`, 'i')] } })
+      .find({ courses: { $in: [new RegExp(`${courses}`, 'i')] } })
       .toArray();
 
     if (response.length === 0) {
