@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+
+import api from '../../utils/api';
 
 interface Teacher {
   _id: string;
@@ -34,9 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   const _id = context.query._id as string;
 
-  const response = await axios.get<Teacher>(
-    `http://localhost:3000/api/teacher/${_id}`
-  );
+  const response = await api<Teacher>(`/api/teacher/${_id}`);
 
   const teacher = response.data;
 
