@@ -21,17 +21,23 @@ interface Teacher {
 }
 
 const SearchPage: NextPage = () => {
-  const [textInput, setTextInput] = useState('');
   const [data, setData] = useState<Teacher[]>([]);
   const [session, loading] = useSession();
 
-  const handleSearch = useCallback(() => {
-    api(`/api/search/${textInput}`).then((response) => {
-      const teachers: Teacher[] = response.data;
+  const handleSearch = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const textInput = document.getElementsByTagName('input')[0].value;
+
+      const response = await api<Teacher[]>(`/api/search/${textInput}`);
+
+      const teachers = response.data;
 
       setData(teachers);
-    });
-  }, [textInput, setData]);
+    },
+    [setData]
+  );
 
   return (
     <div>
@@ -52,16 +58,16 @@ const SearchPage: NextPage = () => {
             Signed in as {session.user.email} <br />
             <button onClick={(): Promise<void> => signOut()}>Sign out</button>
           </div>
-          <input
-            value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-            type="text"
-            placeholder="Nome da matéria"
-            className="bg-pink-200"
-          />
-          <button type="submit" className="bg-blue-200" onClick={handleSearch}>
-            Pesquisar
-          </button>
+          <form onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Nome da matéria"
+              className="bg-pink-200"
+            />
+            <button type="submit" className="bg-blue-200">
+              Pesquisar
+            </button>
+          </form>
           {data.length !== 0 &&
             data.map((teacher) => (
               <Link href={`/search/${teacher._id}`} key={teacher._id}>
