@@ -42,7 +42,7 @@ export default async (
 
     const { db } = await connect();
 
-    const response = await db.findOne({ _id });
+    const response = await db.findOne({ _id, teacher: true });
 
     if (!response) {
       res.status(400).json({ error: `Teacher with ID ${_id} not found` });
