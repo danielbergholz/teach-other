@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-// import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/client';
 import { ObjectID } from 'mongodb';
 import connect from '../../utils/database';
 
@@ -39,52 +39,45 @@ export default async (
   res: NextApiResponse<ErrorResponseType | SuccessResponseType>
 ): Promise<void> => {
   if (req.method === 'POST') {
-    // const session = await getSession({ req });
+    const session = await getSession({ req });
 
-    // if (!session) {
-    //   res.status(400).json({ error: 'Please login first' });
-    //   return;
-    // }
+    if (!session) {
+      res.status(400).json({ error: 'Please login first' });
+      return;
+    }
 
     const {
       date,
-      teacher_name,
       teacher_id,
-      student_name,
-      student_id,
+      student_email,
       course,
       location,
       appointment_link,
     }: {
       date: string;
-      teacher_name: string;
       teacher_id: string;
-      student_name: string;
-      student_id: string;
+      student_email: string;
       course: string;
       location: string;
       appointment_link: string;
     } = req.body;
 
-    if (
-      !date ||
-      !teacher_name ||
-      !teacher_id ||
-      !student_name ||
-      !student_id ||
-      !course ||
-      !location
-    ) {
+    if (session.user.email !== student_email) {
+      res
+        .status(400)
+        .json({ error: 'Use same email from session and request' });
+      return;
+    }
+
+    if (!date || !teacher_id || !student_email || !course || !location) {
       res.status(400).json({ error: 'Missing parameter on request body' });
       return;
     }
 
-    // check if teacher_id or student_id is invalid
+    // check if teacher_id is invalid
     let testTeacherID: ObjectID;
-    let testStudentID: ObjectID;
     try {
       testTeacherID = new ObjectID(teacher_id);
-      testStudentID = new ObjectID(student_id);
     } catch {
       res.status(400).json({ error: 'Wrong objectID' });
       return;
@@ -124,19 +117,19 @@ export default async (
 
     if (!teacherExists) {
       res.status(400).json({
-        error: `Teacher ${teacher_name} with ID ${teacher_id} does not exist`,
+        error: `Teacher ${teacherExists.name} with ID ${teacher_id} does not exist`,
       });
       return;
     }
 
     // check if student exists
     const studentExists: User = await db.findOne({
-      _id: testStudentID,
+      email: student_email,
     });
 
     if (!studentExists) {
       res.status(400).json({
-        error: `Student ${student_name} with ID ${student_id} does not exist`,
+        error: `Student with email ${student_email} does not exist`,
       });
       return;
     }
@@ -144,7 +137,7 @@ export default async (
     // check if student have enough coins
     if (studentExists.coins === 0) {
       res.status(400).json({
-        error: `Student ${student_name} does not have enough coins`,
+        error: `Student ${studentExists.name} does not have enough coins`,
       });
       return;
     }
@@ -163,7 +156,7 @@ export default async (
     const requestedHour = parsedDate.getUTCHours() - 3;
     if (!teacherExists.available_hours[requestedDay]?.includes(requestedHour)) {
       res.status(400).json({
-        error: `Teacher ${teacher_name} is not available at ${requestedDay} ${requestedHour}:00`,
+        error: `Teacher ${teacherExists.name} is not available at ${requestedDay} ${requestedHour}:00`,
       });
       return;
     }
@@ -174,7 +167,9 @@ export default async (
 
       if (appointmentDate.getTime() === parsedDate.getTime()) {
         res.status(400).json({
-          error: `Teacher ${teacher_name} already have an appointment at ${appointmentDate.getDate()}/${
+          error: `Teacher ${
+            teacherExists.name
+          } already have an appointment at ${appointmentDate.getDate()}/${
             appointmentDate.getMonth() + 1
           }/${appointmentDate.getFullYear()} ${
             appointmentDate.getUTCHours() - 3
@@ -187,10 +182,10 @@ export default async (
     // create appointment object
     const appointment = {
       date,
-      teacher_name,
+      teacher_name: teacherExists.name,
       teacher_id,
-      student_name,
-      student_id,
+      student_name: studentExists.name,
+      student_id: studentExists._id,
       course,
       location,
       appointment_link: appointment_link || '',
@@ -204,7 +199,7 @@ export default async (
 
     // update student appointments
     await db.updateOne(
-      { _id: new ObjectID(student_id) },
+      { _id: new ObjectID(studentExists._id) },
       { $push: { appointments: appointment }, $inc: { coins: -1 } }
     );
 
