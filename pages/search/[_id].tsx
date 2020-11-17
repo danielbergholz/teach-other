@@ -48,6 +48,7 @@ export default function teacherProfilePage({
   courses,
   available_hours,
   available_locations,
+  cellphone,
   appointments,
 }: Teacher): JSX.Element {
   const [session, loading] = useSession();
@@ -165,12 +166,10 @@ export default function teacherProfilePage({
         process.env.NEXT_PUBLIC_URL + '/api/appointment',
         data
       );
-      alert(response.data);
+      alert('Aula marcada com sucesso!');
     } catch (err) {
-      alert(err);
+      alert(err?.response?.data?.error || err);
     }
-
-    console.log({ data });
   }, [session, course, location, date, appointmentLink]);
 
   const handleDateSelect = useCallback(
@@ -184,104 +183,164 @@ export default function teacherProfilePage({
     <>
       <NavBar />
       <div className="flex flex-col items-center">
-        <h1 className="text-3xl">Página do professor {name}</h1>
+        <p className="text-3xl border-2 border-box w-3/12 m-auto text-center mt-12">
+          {name}
+        </p>
         <h1 className="text-2xl">E-mail: {email}</h1>
-        <h1 className="text-2xl">ID: {_id}</h1>
-        <h1 className="text-2xl mt-2">Matérias disponíveis:</h1>
-        {courses.map((course) => (
-          <h2 key={course} className="text-xl">
-            {course}
-          </h2>
-        ))}
-        <h1 className="text-2xl mt-2">Horários disponíveis na segunda:</h1>
-        {available_hours?.monday?.map((hour) => (
-          <h2 key={`monday-${hour}`} className="text-xl">
-            {hour}
-          </h2>
-        )) || <h2 className="text-xl">Não disponível</h2>}
+        <h1 className="text-2xl">Telefone: {cellphone}</h1>
 
-        <h1 className="text-2xl mt-2">Horários disponíveis na terça:</h1>
-        {available_hours?.tuesday?.map((hour) => (
-          <h2 key={`tuesday-${hour}`} className="text-xl">
-            {hour}
-          </h2>
-        )) || <h2 className="text-xl">Não disponível</h2>}
-
-        <h1 className="text-2xl mt-2">Horários disponíveis na quarta:</h1>
-        {available_hours?.wednesday?.map((hour) => (
-          <h2 key={`wednesday-${hour}`} className="text-xl">
-            {hour}
-          </h2>
-        )) || <h2 className="text-xl">Não disponível</h2>}
-
-        <h1 className="text-2xl mt-2">Horários disponíveis na quinta:</h1>
-        {available_hours?.thursday?.map((hour) => (
-          <h2 key={`thursday-${hour}`} className="text-xl">
-            {hour}
-          </h2>
-        )) || <h2 className="text-xl">Não disponível</h2>}
-
-        <h1 className="text-2xl mt-2">Horários disponíveis na sexta:</h1>
-        {available_hours?.friday?.map((hour) => (
-          <h2 key={`friday-${hour}`} className="text-xl">
-            {hour}
-          </h2>
-        )) || <h2 className="text-xl">Não disponível</h2>}
-        <h1 className="text-2xl mt-2">Agende uma aula:</h1>
-        <DatePicker
-          showTimeSelect
-          dateFormat="MMMM d, yyyy h:mm aa"
-          selected={date}
-          onChange={handleDateSelect} //when day is clicked
-          minDate={new Date()}
-          maxDate={new Date().setMonth(new Date().getMonth() + 1)}
-          includeDates={validHours}
-          includeTimes={validHours}
-          timeIntervals={60}
-          inline
-        />
-        <div className="my-4">
-          <h1>Você quer aula de qual matéria??</h1>
-          {courses.map((course) => (
-            <div
-              key={course}
-              className="bg-red-400 cursor-pointer mt-2"
-              onClick={() => setCourse(course)}
-            >
-              {course}
+        <div className="text-2xl border-2 border-box w-4/6 m-auto mt-4 p-4">
+          <div>
+            <div className="mb-2">
+              <p>Disciplinas:</p>
+              <div className="flex flex-row space-x-10">
+                <div className="border-2 border-box w-full text-center">
+                  <p>{courses.join(', ')}</p>
+                </div>
+              </div>
             </div>
-          ))}
-          <h1>E em qual localização?</h1>
-          {available_locations.map((location) => (
-            <div
-              key={location}
-              className="bg-green-400 cursor-pointer mt-2"
-              onClick={() => setLocation(location)}
-            >
-              {location}
+
+            <div className="mb-2">
+              <p>Locais:</p>
+              <div className="flex flex-row space-x-10">
+                <div className="border-2 border-box w-full text-center">
+                  <p>{available_locations.join(', ')}</p>
+                </div>
+              </div>
             </div>
-          ))}
-          {location === 'remoto' && (
-            <>
-              <h1 className="mt-2">Favor colocar o link da reunião aqui:</h1>
-              <input
-                type="text"
-                value={appointmentLink}
-                onChange={(e) => setAppointmentLink(e.target.value)}
-                placeholder="https://skype.com/link_reuniao"
-                className="bg-pink-200 my-2"
-              />
-              <br />
-            </>
-          )}
-          <button
-            className="btn-blue my-10"
-            onClick={handleSubmit}
-            type="submit"
-          >
-            Confirmar agendamento
-          </button>
+
+            <div className="mb-2">
+              <p>Horários:</p>
+              <div className="flex flex-row space-x-10">
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>Segunda</p>
+                </div>
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>
+                    {available_hours?.monday?.join(', ') || 'Não disponível'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-row space-x-10 mt-4">
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>Terça</p>
+                </div>
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>
+                    {available_hours?.tuesday?.join(', ') || 'Não disponível'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-row space-x-10 mt-4">
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>Quarta</p>
+                </div>
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>
+                    {available_hours?.wednesday?.join(', ') || 'Não disponível'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-row space-x-10 mt-4">
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>Quinta</p>
+                </div>
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>
+                    {available_hours?.thursday?.join(', ') || 'Não disponível'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-row space-x-10 mt-4">
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>Sexta</p>
+                </div>
+                <div className="border-2 border-box w-1/2 text-center">
+                  <p>
+                    {available_hours?.friday?.join(', ') || 'Não disponível'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        {session ? (
+          <>
+            <h1 className="text-2xl mt-6">Agende uma aula:</h1>
+            <DatePicker
+              showTimeSelect
+              dateFormat="MMMM d, yyyy h:mm aa"
+              selected={date}
+              onChange={handleDateSelect} //when day is clicked
+              minDate={new Date()}
+              maxDate={new Date().setMonth(new Date().getMonth() + 1)}
+              includeDates={validHours}
+              includeTimes={validHours}
+              timeIntervals={60}
+              inline
+            />
+            <div className="my-4">
+              <h1 className="text-2xl text-center">
+                Você quer aula de qual matéria??
+              </h1>
+              {courses.map((courseMap) => (
+                <div
+                  key={courseMap}
+                  className={`border-2 border-box w-1/2 text-center mt-2 cursor-pointer m-auto ${
+                    course === courseMap && 'bg-box text-white'
+                  }`}
+                  onClick={() => setCourse(courseMap)}
+                >
+                  {courseMap}
+                </div>
+              ))}
+              <h1 className="text-2xl text-center">E em qual localização?</h1>
+              {available_locations.map((locationMap) => (
+                <div
+                  key={locationMap}
+                  className={`border-2 border-box w-1/2 text-center mt-2 cursor-pointer m-auto ${
+                    location === locationMap && 'bg-box text-white'
+                  }`}
+                  onClick={() => setLocation(locationMap)}
+                >
+                  {locationMap}
+                </div>
+              ))}
+              {location === 'remoto' && (
+                <>
+                  <h1 className="mt-2">
+                    Favor colocar o link da reunião aqui:
+                  </h1>
+                  <input
+                    type="text"
+                    value={appointmentLink}
+                    onChange={(e) => setAppointmentLink(e.target.value)}
+                    placeholder="https://skype.com/link_reuniao"
+                    className="bg-pink-200 my-2"
+                  />
+                  <br />
+                </>
+              )}
+              <div className="text-center">
+                <button
+                  className="text-xl bg-box text-center text-white mt-8 p-2"
+                  onClick={handleSubmit}
+                  type="submit"
+                >
+                  Confirmar agendamento
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <h1 className="text-xl bg-box text-center text-white mt-8 p-2">
+            Faça login para agendar uma aula com {name}
+          </h1>
+        )}
       </div>
     </>
   );

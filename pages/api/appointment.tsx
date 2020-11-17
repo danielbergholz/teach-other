@@ -183,6 +183,7 @@ export default async (
     const appointment = {
       date,
       teacher_name: teacherExists.name,
+      teacher_email: teacherExists.email,
       teacher_id,
       student_name: studentExists.name,
       student_id: studentExists._id,
