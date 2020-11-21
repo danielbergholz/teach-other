@@ -120,7 +120,9 @@ const ProfilePage: NextPage = () => {
       await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user`, data);
       setLoggedUserWithoutAccount(false);
     } catch (err) {
-      alert(err.response.data.error);
+      alert(
+        err?.response?.data?.error || 'Houve um problema na criação da conta'
+      );
     }
   };
 
