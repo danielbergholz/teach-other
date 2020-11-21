@@ -162,10 +162,7 @@ export default function teacherProfilePage({
     };
 
     try {
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_URL + '/api/appointment',
-        data
-      );
+      await axios.post(process.env.NEXT_PUBLIC_URL + '/api/appointment', data);
       alert('Aula marcada com sucesso!');
     } catch (err) {
       alert(err?.response?.data?.error || err);
@@ -312,16 +309,18 @@ export default function teacherProfilePage({
               ))}
               {location === 'remoto' && (
                 <>
-                  <h1 className="mt-2">
+                  <h1 className="mt-2 text-2xl text-center">
                     Favor colocar o link da reunião aqui:
                   </h1>
-                  <input
-                    type="text"
-                    value={appointmentLink}
-                    onChange={(e) => setAppointmentLink(e.target.value)}
-                    placeholder="https://skype.com/link_reuniao"
-                    className="bg-pink-200 my-2"
-                  />
+                  <div className="mt-2 text-center">
+                    <input
+                      type="text"
+                      value={appointmentLink}
+                      onChange={(e) => setAppointmentLink(e.target.value)}
+                      placeholder="Ex: skype.com/link"
+                      className="border-2 border-box w-1/2"
+                    />
+                  </div>
                   <br />
                 </>
               )}
