@@ -85,23 +85,10 @@ export default async (
 
     const parsedDate = new Date(date);
     const now = new Date();
-    const today = {
-      day: now.getDate(),
-      month: now.getMonth(),
-      year: now.getFullYear(),
-    };
-    const fullDate = {
-      day: parsedDate.getDate(),
-      month: parsedDate.getMonth(),
-      year: parsedDate.getFullYear(),
-    };
+    const auxParsedDate = new Date(date);
 
     // check if requested date is on the past
-    if (
-      fullDate.year < today.year ||
-      fullDate.month < today.month ||
-      fullDate.day < today.day
-    ) {
+    if (auxParsedDate.setHours(0, 0, 0, 0) <= now.setHours(0, 0, 0, 0)) {
       res.status(400).json({
         error: "You can't create appointments on the past",
       });
@@ -131,6 +118,14 @@ export default async (
       res.status(400).json({
         error: `Student with email ${student_email} does not exist`,
       });
+      return;
+    }
+
+    // check if teacher and student are the same person
+    if (student_email === teacherExists.email) {
+      res
+        .status(400)
+        .json({ error: 'You cannot create an appointment with yourself' });
       return;
     }
 
