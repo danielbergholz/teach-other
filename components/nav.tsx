@@ -7,15 +7,15 @@ const Nav: NextComponentType = () => {
   const [session, loading] = useSession();
 
   return (
-    <nav>
-      <ul className="flex justify-between items-center bg-nav">
+    <nav className="pb-20">
+      <ul className="flex justify-between items-center bg-nav fixed w-full z-50">
         <Link href="/">
           <a className="flex">
             <Image
               src="/logo.jpg"
               alt="Logo Teach Other"
-              width={80}
-              height={80}
+              width={60}
+              height={60}
             />
           </a>
         </Link>
