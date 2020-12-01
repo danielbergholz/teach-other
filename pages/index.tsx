@@ -9,8 +9,8 @@ const IndexPage: NextPage = () => {
     <>
       <div className="text-center bg-home">
         <Nav />
-        <div className="flex flex-row space-x-64 w-1/3 m-auto text-white">
-          <h1 className="text-3xl my-16 bg-gray-800 rounded-lg p-4 ml-64">
+        <div className="flex flex-row space-x-64 w-2/5 m-auto text-white">
+          <h1 className="text-3xl my-56 rounded-lg p-4">
             Você é universitário, e está com dificuldade em alguma disciplina?
             Encontre um outro estudante da sua universidade para ser seu
             professor! Caso você tenha facilidade em certa disciplina da
